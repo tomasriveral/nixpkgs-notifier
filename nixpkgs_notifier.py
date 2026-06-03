@@ -37,13 +37,20 @@ DEFAULT_CONFIG = {
         "userPingServer": "matrix.org"
     }
 }
+
 def getPRTitle(PRnumber):
     buf = io.BytesIO()
-    with pycurl.Curl() as c:
-        c.setopt(c.URL, "https://api.github.com/repos/NixOS/nixpkgs/pulls/" + str(PRnumber))
-        c.setopt(c.USERAGENT, "pycurl")
-        c.setopt(c.WRITEDATA, buf)
-        c.perform()
+
+    c = pycurl.Curl()
+    c.setopt(
+        c.URL,
+        f"https://api.github.com/repos/NixOS/nixpkgs/pulls/{PRnumber}"
+    )
+    c.setopt(c.USERAGENT, "pycurl")
+    c.setopt(c.WRITEDATA, buf)
+    c.perform()
+    c.close()
+
     return json.loads(buf.getvalue())["title"]
 
 def load_config():
