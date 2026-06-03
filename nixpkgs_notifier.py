@@ -37,6 +37,14 @@ DEFAULT_CONFIG = {
         "userPingServer": "matrix.org"
     }
 }
+def getPRTitle(PRnumber):
+    buf = io.BytesIO()
+    with pycurl.Curl() as c:
+        c.setopt(c.URL, "https://api.github.com/repos/NixOS/nixpkgs/pulls/" + str(PRnumber))
+        c.setopt(c.USERAGENT, "pycurl")
+        c.setopt(c.WRITEDATA, buf)
+        c.perform()
+    return json.loads(buf.getvalue())["title"]
 
 def load_config():
     config_dir.mkdir(parents=True, exist_ok=True)
@@ -64,6 +72,7 @@ def addTracker(PRnumber):
     elif result == "pending":
         with trackedPRFile.open("a") as f:
             f.write(f"{PRnumber}\n")
+    print("Added tracked PR " + str(PRnumber) + " " + getPRTitle(PRnumber))
 
 def removeTracker(PRnumber):
     if not trackedPRFile.exists():
@@ -77,12 +86,15 @@ def removeTracker(PRnumber):
             if line.strip() != str(PRnumber):
                 f.write(line)
 
+    print("Removed tracked PR " + str(PRnumber) + " " + getPRTitle(PRnumber))
+
 def localNotify(PRnumber):
     notify2.init("nixpkgs-tracker-notify")
 
     notification = notify2.Notification(
         "nixpkgs PR merged",
-        f"PR #{PRnumber} is now available in nixos-unstable.\n"
+        "PR #" + str(PRnumber) + " " +  getPRTitle(PRnumber) + "\n" 
+        "is now available in nixos-unstable.\n"
         f"https://nixpk.gs/pr-tracker.html?pr={PRnumber}",
     )
 
@@ -116,7 +128,7 @@ def matrix_check_whoami():
 
 def matrixNotify(PRnumber):
     if matrix_check_whoami():
-        command = "matrix-commander-rs -m \"PR " + str(PRnumber) + " is now available in nixos-unstable.\nhttps://nixpk.gs/pr-tracker.html?pr=" + str(PRnumber)
+        command = "matrix-commander-rs -m \"PR #" + str(PRnumber) + "  " + getPRTitle(PRnumber) + " is now available in nixos-unstable.\nhttps://nixpk.gs/pr-tracker.html?pr=" + str(PRnumber)
         if matrixPing:
             command += '\n<a href=\\"https://matrix.to/#/' + matrixUserToPing + ':' + matrixUserServer + '\\">' + matrixUserToPing + '</a>\" --html'
         else:
@@ -211,7 +223,7 @@ def main():
                 for line in f:
                     pr = line.strip()
                     if pr:
-                        print(f"  {pr}")
+                        print("  " + str(pr) + "  " + getPRTitle(pr))
     
     elif sys.argv[1] == "listen":
         while True:
