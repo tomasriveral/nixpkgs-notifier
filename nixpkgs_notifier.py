@@ -11,7 +11,7 @@ import json
 
 state_dir = Path(
     os.environ.get("XDG_STATE_HOME", Path.home() / ".local" / "state")
-) / "nixpkgs-notify"
+) / "nixpkgs-notifier"
 state_dir.mkdir(parents=True, exist_ok=True)
 
 trackedPRPath = state_dir / "tracked.txt"
@@ -19,7 +19,7 @@ trackedPRFile = Path(trackedPRPath)
 
 config_dir = Path(
     os.environ.get("XDG_CONFIG_HOME", Path.home() / ".config")
-) / "nixpkgs-notify"
+) / "nixpkgs-notifier"
 
 configPath = config_dir / "config.json"
 configFile = Path(configPath)
