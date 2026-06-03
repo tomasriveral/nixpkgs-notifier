@@ -1,0 +1,12 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "nixpkgs-notifier"
+version = "1.0"
+description = "Nixpkgs tracker notifier"
+requires-python = ">=3.10"
+
+[project.scripts]
+nixpkgs-notifier = "nixpkgs_notifier:main"
