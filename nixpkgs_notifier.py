@@ -234,46 +234,46 @@ def main():
                     if pr:
                         print("  " + str(pr) + "  " + getPRTitle(pr))
     
-elif sys.argv[1] == "listen":
-    while True:
-        try:
-            if trackedPRFile.exists():
-                # Read a snapshot of the file first so we don't modify
-                # tracked.txt while iterating over it.
-                with trackedPRFile.open("r") as f:
-                    tracked_prs = []
-                    for line in f:
-                        line = line.strip()
-                        if not line:
-                            continue
-                        tracked_prs.append(int(line))
-                
-                for PR in tracked_prs:
-                    try:
-                        status = fetchStatus(PR)
-
-                        if status == "accepted":
-                            print(f"PR #{PR} accepted")
-
-                            if shouldLocalNotify:
-                                localNotify(PR)
-                            if shouldMatrixNotify:
-                                matrixNotify(PR)
-                            removeTracker(PR)
-                            print(f"Removed PR #{PR} from tracking")
-
-                    except Exception as e:
-                        print(
-                            f"Failed to process PR #{PR}: {e}"
-                        )
-
-                    # Avoid hammering the tracker website
-                    sleep(configFetchTime)
-
-        except Exception as e:
-            print(f"Listener loop error: {e}")
-
-        sleep(configTime)
+    elif sys.argv[1] == "listen":
+        while True:
+            try:
+                if trackedPRFile.exists():
+                    # Read a snapshot of the file first so we don't modify
+                    # tracked.txt while iterating over it.
+                    with trackedPRFile.open("r") as f:
+                        tracked_prs = []
+                        for line in f:
+                            line = line.strip()
+                            if not line:
+                                continue
+                            tracked_prs.append(int(line))
+                    
+                    for PR in tracked_prs:
+                        try:
+                            status = fetchStatus(PR)
+    
+                            if status == "accepted":
+                                print(f"PR #{PR} accepted")
+    
+                                if shouldLocalNotify:
+                                    localNotify(PR)
+                                if shouldMatrixNotify:
+                                    matrixNotify(PR)
+                                removeTracker(PR)
+                                print(f"Removed PR #{PR} from tracking")
+    
+                        except Exception as e:
+                            print(
+                                f"Failed to process PR #{PR}: {e}"
+                            )
+    
+                        # Avoid hammering the tracker website
+                        sleep(configFetchTime)
+    
+            except Exception as e:
+                print(f"Listener loop error: {e}")
+    
+            sleep(configTime)
     else:
         print("Unknown argument \"" + sys.argv[1] + "\"\nAccepted arguments are:\n    add\n    remove or rm\n    list or ls\n    listen")
     
