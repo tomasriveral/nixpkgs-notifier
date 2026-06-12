@@ -9,6 +9,8 @@ from time import sleep
 import subprocess
 import json
 
+global matrixPing, matrixUserToPing, matrixUserServer, matrixRoom
+
 state_dir = Path(
     os.environ.get("XDG_STATE_HOME", Path.home() / ".local" / "state")
 ) / "nixpkgs-notifier"
